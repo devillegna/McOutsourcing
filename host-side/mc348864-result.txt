@@ -1,0 +1,104 @@
+
+
+=== SPEED ===
+
+baud rate of usart<-> usb serial port : 38400  bits/sec   (4800 bytes/sec)
+
+size of chunk: m4-->host : 3200 bytes
+size of chunk: host-->m4 : 3072 bytes
+
+
+keypair:  182.027  sec.  (# computing invitable matrix while sk-->pk : 1)
+          208.839  sec.  (# inv : 2)
+data communication cost (# chunks):
+m4-->host x 24  ( for computing invitable matrix )
+m4-->host x 85
+host-->m4 x 85
+
+
+encap :  70.539
+data communication cost (# chunks):
+host-->m4 x 85
+
+decap :  0.0158
+
+
+board: STM32F4-discovery
+numbers are reported from pqm4 in clock cycles / 168,000,000 --> sec.
+
+
+
+=== STACK ===
+
+keypair stack usage:
+60232
+
+encaps stack usage:
+7236
+
+decaps stack usage:
+18500
+
+numbers are reported from pqm4 (without key storage)
+
+
+ :: [10]: b'::OK KEYS\n'
+ :: [18]: b'::keypair cycles:\n'
+ :: [15]: b'::000C30E02D8C\n'
+ :: [17]: b'::encaps cycles:\n'
+ :: [15]: b'::0002BDB7D364\n'
+ :: [17]: b'::decaps cycles:\n'
+ :: [15]: b'::00000029232E\n'
+
+ :: [10]: b'::OK KEYS\n'
+ :: [18]: b'::keypair cycles:\n'
+ :: [15]: b'::000711DE1900\n'
+ :: [17]: b'::encaps cycles:\n'
+ :: [15]: b'::0002BDC50EE8\n'
+ :: [17]: b'::decaps cycles:\n'
+ :: [15]: b'::00000029232E\n'
+
+ :: [10]: b'::OK KEYS\n'
+ :: [18]: b'::keypair cycles:\n'
+ :: [15]: b'::00091E03BD57\n'
+ :: [17]: b'::encaps cycles:\n'
+ :: [15]: b'::0002BDB883AD\n'
+ :: [17]: b'::decaps cycles:\n'
+ :: [15]: b'::00000029232E\n'
+
+ :: [10]: b'::OK KEYS\n'
+ :: [18]: b'::keypair cycles:\n'
+ :: [15]: b'::00091D9AA920\n'
+ :: [17]: b'::encaps cycles:\n'
+ :: [15]: b'::0002BDC0FEB5\n'
+ :: [17]: b'::decaps cycles:\n'
+ :: [15]: b'::000000292334\n'
+ :: [23]: b'::keypair comm cycles:\n'
+ :: [15]: b'::0007E8143C7F\n'
+ :: [22]: b'::encaps comm cycles:\n'
+ :: [15]: b'::0002BC1D17E1\n'
+
+ :: [10]: b'::OK KEYS\n'
+ :: [18]: b'::keypair cycles:\n'
+ :: [15]: b'::000712E47610\n'
+ :: [17]: b'::encaps cycles:\n'
+ :: [15]: b'::0002BDC5BD51\n'
+ :: [17]: b'::decaps cycles:\n'
+ :: [15]: b'::000000292334\n'
+ :: [23]: b'::keypair comm cycles:\n'
+ :: [15]: b'::0006555750C5\n'
+ :: [22]: b'::encaps comm cycles:\n'
+ :: [15]: b'::0002BC21D43B\n'
+
+ :: [10]: b'::OK KEYS\n'
+ :: [18]: b'::keypair cycles:\n'
+ :: [15]: b'::00071179311C\n'
+ :: [17]: b'::encaps cycles:\n'
+ :: [15]: b'::0002BDC3D3F9\n'
+ :: [17]: b'::decaps cycles:\n'
+ :: [15]: b'::000000292334\n'
+ :: [23]: b'::keypair comm cycles:\n'
+ :: [15]: b'::000653EC0B64\n'
+ :: [22]: b'::encaps comm cycles:\n'
+ :: [15]: b'::0002BC1F2B23\n'
+

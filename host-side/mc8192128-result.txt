@@ -1,0 +1,70 @@
+
+
+=== SPEED ===
+
+baud rate of usart<-> usb serial port : 38400  bits/sec   (4800 bytes/sec)
+
+size of chunk: m4-->host : 6784 bytes
+size of chunk: host-->m4 : 6656 bytes
+
+--
+keypair seconds: 996.62 sec.  (# computing invitable matrix while sk-->pk : 1)
+
+data communication cost (# chunks):
+m4-->host x 52  ( for computing invitable matrix )
+m4-->host x 204
+host-->m4 x 204
+
+--
+encaps  seconds: 364.21 sec.
+
+data communication cost (# chunks):
+host-->m4 x 204
+
+--
+decaps  seconds: 0.0442 sec.
+
+
+board: STM32F4-discovery
+numbers are reported from pqm4 in clock cycles / 168,000,000 --> sec.
+
+
+
+=== STACK ===
+
+keypair stack usage:
+100948
+
+encaps stack usage:
+15332
+
+decaps stack usage:
+36100
+
+numbers are reported from pqm4 (without key storage)
+
+
+ :: [10]: b'::OK KEYS\n'
+ :: [18]: b'::keypair cycles:\n'
+ :: [15]: b'::002720005A8E\n'
+ :: [17]: b'::encaps cycles:\n'
+ :: [15]: b'::000E3F35C9BE\n'
+ :: [17]: b'::decaps cycles:\n'
+ :: [15]: b'::00000071C91D\n'
+
+ :: [10]: b'::OK KEYS\n'
+ :: [18]: b'::keypair cycles:\n'
+ :: [15]: b'::00367F49659A\n'
+ :: [17]: b'::encaps cycles:\n'
+ :: [15]: b'::000E3F400112\n'
+ :: [17]: b'::decaps cycles:\n'
+ :: [15]: b'::00000071C948\n'
+
+ :: [10]: b'::OK KEYS\n'
+ :: [18]: b'::keypair cycles:\n'
+ :: [15]: b'::003BA88CC6C2\n'
+ :: [17]: b'::encaps cycles:\n'
+ :: [15]: b'::000E3F43AD4A\n'
+ :: [17]: b'::decaps cycles:\n'
+ :: [15]: b'::00000071C948\n'
+
