@@ -51,11 +51,17 @@ unsigned pksrv_get_pk(uint32_t token, uint8_t * pk_chunk , unsigned idx_pk );
   4) While receiving pk chunks, the M4 device tests its integrity with its sk. If the pk is correct, the device calcuates its hash and stores hashes instead of a real pk.  
    (Note: the M4 can always generate its pk from its sk. It choices to store the pk in the key server to save its local storage space.)  
 
-- The M4 device performs encapsulation with pkhsahes:  
+- The M4 device performs encapsulation with pkhsahes[^1]:
   1) With the stored pk hashes, the M4 device ask the server if the server stored its pk.  
   2) If yes, the device requests the pk chunks.  
   3) While receiving pk chunks, the M4 device check its integrity with the stored hashes of the pk chunks.  
   4) The device performs encapsulation chunk by chunk.  
+
+[^1]: We hope the encapsulation experiment can show the scenario:  
+ We assumed that the key server (host-side/) stored MANY public keysfrom many devices it served.
+ Supposing device A wants to generate a shared secret with device B and device A has only the HASH of public key of B (PKb), then device A can request PKb from the key server by the HASH of PKb.
+ The server sends PKb to device A chunk by chunk, and device A performs the encapsulation while checking the integrity of PKb  via its own HASH of PKb.  
+ In the experiment, it might be misleading since the M4 performs encapsulation with its own pk. The point here is that the M4 device can request any pk from the server as long as the M4 device has the hashes of reguested pks.
 
 - Decapsulation: The M4 device decaps the previous encap results for a shared key.  
 
