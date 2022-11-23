@@ -61,7 +61,7 @@ unsigned pksrv_get_pk(uint32_t token, uint8_t * pk_chunk , unsigned idx_pk );
   We assumed that the key server (host-side/) stored MANY public keysfrom many devices it served.
   Supposing device A wants to generate a shared secret with device B and device A has only the HASH of public key of B (PKb), then device A can request PKb from the key server by the HASH of PKb.
   The server sends PKb to device A chunk by chunk, and device A performs the encapsulation while checking the integrity of PKb  via its own HASH of PKb.  
-  In the experiment, it might be misleading since the M4 performs encapsulation with its own pk. The point here is that the M4 device can request any pk from the server as long as the M4 device has the hashes of reguested pks.
+  In the experiment, it might be misleading since the M4 performs encapsulation with its own pk. The point here is that the M4 device can request any pk from the server as long as the M4 device has the hashes of requested pks.
 
 - Decapsulation: The M4 device decaps the previous encap results for a shared key.  
 
