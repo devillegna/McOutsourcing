@@ -123,7 +123,7 @@ void gen_e(unsigned char *e)
 
 
 
-#include "pksrv_n4608_t96.h"
+#include "pksrv.h"
 
 
 static inline
@@ -176,7 +176,6 @@ int encrypt(unsigned char *s, const unsigned char *pk, const unsigned char *e)
 	uint32_t chunk[SIZE_CHUNK_PK/4];
 
 	uint8_t hash_32b[32];
-
 	uint32_t token = pksrv_retrive_pk( pk );
 	if( -1 == token ) return -1;
 	pk += 32;
@@ -205,8 +204,3 @@ int encrypt(unsigned char *s, const unsigned char *pk, const unsigned char *e)
 	}
 	return 0;
 }
-
-
-
-
-
