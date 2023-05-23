@@ -5,6 +5,7 @@
 #include "pk_gen.h"
 
 #include "params.h"
+
 #include "util.h"
 #include "vec32.h"
 
@@ -151,7 +152,7 @@ uint32_t validate_pk_with_sk( uint32_t * prepk, const uint32_t * recv_pk ,  cons
 
 
 
-#include "pksrv_n3488_t64.h"
+#include "pksrv.h"
 
 
 
@@ -167,19 +168,15 @@ int pk_gen(unsigned char * pk, const unsigned char * irr, const unsigned char *e
 	// calcuate the inverse matrix for systematicalizing the public matrix
 	uint32_t __mat[ GFBITS * SYS_T ] = {0}; // part of pk, 3072 bytes
 	uint32_t mat0[ GFBITS * SYS_T + 32 ] = {0}; // linear combination of rows of pk for outsourcing, 3072 + 128 bytes
-
 	uint32_t pksrv_token = pksrv_init(1);
 	if( -1 == pksrv_token ) return -1;
-
 	for(int i=0;i<nblocks_I;i++) {
 		fill_in_matrix_1( __mat , &invga_bs[i*GFBITS], &a_bs[i*GFBITS] );
 		random_linear_combination( mat0 , __mat , extra_prng_seed );
 		pksrv_store_prepk( pksrv_token , mat0 , i );
 	}
-
 	int r = pksrv_compute_pk( pksrv_token );
 	if(r) return r;
-
 	for(int i=0; i<nblocks_H-nblocks_I;i++) {
 		fill_in_matrix_1( __mat , &invga_bs[(nblocks_I+i)*GFBITS], &a_bs[(nblocks_I+i)*GFBITS] );
 		random_linear_combination( mat0 , __mat , extra_prng_seed );
