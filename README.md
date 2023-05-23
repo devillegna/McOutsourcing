@@ -138,15 +138,15 @@ The API for KEM and execution evniroment and the same with the PQM4.
 
 ### Stack usage:
 
-Benchamrked on STM32F4-discovery with the mupq/crypto_kem/stack.c in the PQM4.  
+Benchamrked on mps2-an386 with the mupq/crypto_kem/stack.c in the PQM4.  
 
 | Parameter        | keypair | encaps | decaps  |
 | :---             |   ---:  |  ---:  |    ---: |
-| mceliece348864   | 60232   | 7236   | 18500   |
-| mceliece460896   | ???     |  ???   | 34956   |
-| mceliece6688128  | ???     |  ???   | 35716   |
-| mceliece6960119  | ???     |  ???   | 35764   |
-| mceliece8192128  | 100948  | 15332  | 36100   |
+| mceliece348864   | 52620   | 7204   | 18492   |
+| mceliece460896   | 96572   | 11308  | 34964   |
+| mceliece6688128  | 100920  | 14996  | 35708   |
+| mceliece6960119  | 96972   | 14780  | 35756   |
+| mceliece8192128  | 100816  | 15188  | 36092   |
 
 These numbers are the measurements of stack usage of related functions. It does not contain the key pair storage provided by the caller functions.  
 
