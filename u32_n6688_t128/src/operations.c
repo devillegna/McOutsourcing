@@ -33,8 +33,7 @@ int crypto_kem_enc(
 	two_e[0] = 2;
 	crypto_hash_32b(c + SYND_BYTES, two_e, 1 + SYS_N/8 );
 
-	//encrypt((uint8_t*)_buf_c, pk, e);
-	if( encrypt((uint8_t*)_buf_c, pk, e) ) return -1; // may fail from received pk
+	if( encrypt((uint8_t*)_buf_c, pk, e) ) return -1;  // may fail from recieved pks
 	memcpy(c, _buf_c, SYND_BYTES );
 	memcpy(one_ec + 1 + SYS_N/8, c, SYND_BYTES + 32);
 
@@ -86,7 +85,8 @@ int crypto_kem_dec(
 }
 
 
-int crypto_kem_keypair(
+int crypto_kem_keypair
+(
 	unsigned char *pk,
 	unsigned char *sk
 )

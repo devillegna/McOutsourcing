@@ -36,73 +36,32 @@ void send_bytes( const uint8_t * v , int l )
 
 #else    // defined(STM32F407VG)
 
-
-
-
-#if 0
-void hal_send_str(const char * str)
+#include <../../common/mps2/CMSDK_CM4.h>
+static inline void uart_putc(int c)
 {
-  const char *cur = str;
-  while(*cur) {
-    send_bytes( cur , 1 );
-    cur++;
-  }
-  send_bytes( "\n" , 1 );
+  while(CMSDK_UART0->STATE & CMSDK_UART_STATE_TXBF_Msk);
+  CMSDK_UART0->DATA = c & 0xFFu;
 }
-#endif
-
-
-#include <fcntl.h>
-#include "unistd.h"
-#include "stdio.h"
-#include "stdlib.h"
-
-
-static int fd = -1;
+static inline char uart_revc()
+{
+  while(!(CMSDK_UART0->STATE & CMSDK_UART_STATE_RXBF_Msk));
+       return (char)(CMSDK_UART0->DATA);
+}
 
 void get_bytes( uint8_t * v , int l )
 {
-//  uint8_t *bb = v;
-
-  if( -1 == fd ) fd = open( COMM_TTY , O_RDWR | O_NOCTTY | O_SYNC);
-  if( -1 == fd ) { printf("can not open serial port"); exit(-1); }
-
-  while(l) {
-    int sz = read( fd , v , l );
-    if( 0 > sz ) break;
-    if( 0 < sz ) {
-      l -= sz;
-      v += sz;
-    }
+  uint16_t r;
+  for(int i=0;i<l;i++) {
+    r = uart_revc();
+    v[i] = r&255;
   }
-  //close( fd );
-//  if( l < 3 ) {
-//    printf("get bytes: [%02x,%02x].\n", bb[0], bb[1]);
-//  }
-
 }
-
 void send_bytes( const uint8_t * v , int l )
 {
-//  if( l < 3 ) {
-//    printf("send bytes: [%02x,%02x] \n", v[0], v[1]);
-//  }
-
-  if( -1 == fd ) fd = open( COMM_TTY , O_RDWR | O_NOCTTY | O_SYNC);
-  if( -1 == fd ) { printf("can not open serial port"); exit(-1); }
-
-  while(l) {
-    int sz = write( fd , v , l );
-    if( 0 > sz ) break;
-    if( 0 < sz ) {
-      l -= sz;
-      v += sz;
-    }
+  for(int i=0;i<l;i++) {
+    uart_putc(v[i]);
   }
-  //close( fd );
 }
-
-
 
 #endif  // #if defined(STM32F407VG)
 
