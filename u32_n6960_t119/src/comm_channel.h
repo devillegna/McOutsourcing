@@ -18,7 +18,7 @@ void send_bytes( const uint8_t * v , int l );
 #if defined(_MAC_OS_)
 #define COMM_TTY    "/dev/ttys007"
 #else
-#define COMM_TTY    "/dev/pts/6"
+#define COMM_TTY    "/dev/pts/3"
 #endif
 
 #endif  //#ifndef _COMM_CHANNEL_H_
