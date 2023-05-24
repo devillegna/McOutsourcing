@@ -25,12 +25,7 @@ unsigned pksrv_compute_pk( uint32_t token );
 unsigned pksrv_get_pk(uint32_t token, uint8_t * pk_chunk , unsigned idx_pk );
 ```
 
-
-
-
-
 ## Contents
-
 
 - host-side/: A (python) pk server executed in the PC side.  
 - u32_nXXXX_tXXXX: Classic McEliece cdoe with various parameters for performing the out-sourcing experiments in a M4 device.  
@@ -38,7 +33,29 @@ unsigned pksrv_get_pk(uint32_t token, uint8_t * pk_chunk , unsigned idx_pk );
 - **pqm4-projects**: Projects for PQM4(https://github.com/mupq/pqm4).  
  [Note] The implementation generates the same KATs as the R3 submisions in https://classic.mceliece.org/ .  
 
-
+## Running tests and benchmarks with the mps2-an386 simulator
+Follow the setup of PQM4 first.
+Then obtain the pqm4 library and the submodules:
+```
+git clone --recursive https://github.com/mupq/pqm4.git
+```
+Copy files to the PQM4 directory:
+```
+cp -r u32_nxxxx_txxx/src  /pqm4/crypto_kem/u32_nxxxx_txxx
+```
+Go to the PQM4
+```
+cd pqm4
+```
+Build projects for mps2-an386 platform:
+```
+make -j4 PLATFORM=mps2-an386 IMPLEMENTATION_PATH=crypto_kem/u32_nxxxx_txxx/
+```
+Set up a pk server(see /host-side)
+Finally, run tests or benchmarks:
+```
+emu-system-arm -M mps2-an386 -nographic -semihosting -serial /dev/pts/x -kernel elf/crypto_kem_u32_nxxxx_txxx__xxxxx.elf
+```
 ## Experiments and Results:
 
 ### Experiments:
