@@ -57,7 +57,7 @@ Set up a pk server(see /host-side)
 
 Finally, run tests or benchmarks:
 ```
-emu-system-arm -M mps2-an386 -nographic -semihosting -serial /dev/pts/x -kernel elf/crypto_kem_u32_nxxxx_txxx__xxxxx.elf
+qemu-system-arm -M mps2-an386 -nographic -semihosting -serial /dev/pts/x -kernel elf/crypto_kem_u32_nxxxx_txxx__xxxxx.elf
 ```
 ## Experiments and Results:
 
