@@ -45,9 +45,9 @@ Copy files to the PQM4 directory:
 ```
 cp -r u32_nxxxx_txxx/src  /pqm4/crypto_kem/u32_nxxxx_txxx
 ```
-Go to the PQM4
+Go to the PQM4:
 ```
-cd pqm4:
+cd pqm4
 ```
 Build projects for mps2-an386 platform:
 ```
