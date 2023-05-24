@@ -47,13 +47,13 @@ cp -r u32_nxxxx_txxx/src  /pqm4/crypto_kem/u32_nxxxx_txxx
 ```
 Go to the PQM4
 ```
-cd pqm4
+cd pqm4:
 ```
 Build projects for mps2-an386 platform:
 ```
 make -j4 PLATFORM=mps2-an386 IMPLEMENTATION_PATH=crypto_kem/u32_nxxxx_txxx/
 ```
-Set up a pk server(see /host-side)
+Set up a pk server(see /host-side).
 
 Finally, run tests or benchmarks:
 ```
