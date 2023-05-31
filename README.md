@@ -45,20 +45,69 @@ Copy files to the PQM4 directory:
 ```
 cp -r u32_nxxxx_txxx/src  /pqm4/crypto_kem/u32_nxxxx_txxx
 ```
-Go to the PQM4:
+Set up a pk server(see /host-side):
+
+-Build a serial port channel for simulating communication channel:
 ```
-cd pqm4
+socat -d -d pty,rawer pty,rawer
 ```
+ex:/dev/pts/2 and /dev/pts/3
+
+-Open a new terminal and go to /host-side 
+
+-Build a C library for computing inverse matrix:
+```
+make
+```
+-Run the Classic McEliece PK storage server for communication with a simulated /dev/pts/2 serial port:
+```
+python3 ./host-mc348864keysrv.py /dev/pts/2
+```
+
+Go to /pqm4.
+
 Build projects for mps2-an386 platform:
 ```
 make -j4 PLATFORM=mps2-an386 IMPLEMENTATION_PATH=crypto_kem/u32_nxxxx_txxx/
 ```
-Set up a pk server(see /host-side).
 
 Finally, run tests or benchmarks:
 ```
-qemu-system-arm -M mps2-an386 -nographic -semihosting -serial /dev/pts/x -kernel elf/crypto_kem_u32_nxxxx_txxx__xxxxx.elf
+qemu-system-arm -M mps2-an386 -nographic -semihosting -serial /dev/pts/3 -kernel elf/crypto_kem_u32_nxxxx_txxx__xxxxx.elf
 ```
+
+## Running tests and benchmarks with the stm32f4-discovery board
+
+Set up a pk server(see /host-side):
+
+-Go to /host-side 
+
+-Build a C library for computing inverse matrix:
+```
+make
+```
+-Run the Classic McEliece PK storage server for communication between an M4 and /dev/ttyUSB0 port:
+```
+python3 ./host-mc348864keysrv.py /dev/ttyUSB0 38400
+```
+[Note] The file /dev/ttyUSB0 must have rwx permissions.
+
+Go to the /pqm4.
+
+Build projects for mps2-an386 platform:
+```
+make -j4 PLATFORM=stm32f4discovery IMPLEMENTATION_PATH=crypto_kem/u32_nxxxx_txxx/
+```
+
+Write the binary to the board and run the test:
+```
+st-flash write bin/crypto_kem_u32_nxxxx_txxx__stack.bin 0x8000000
+```
+[Note] There is a instruction for connecting the board in https://github.com/mupq/pqm4#connecting-the-stm32f4-discovery-board-to-the-host.
+
+
+Finally, press the reset button on the board for running tests or benchmarks.
+
 ## Experiments and Results:
 
 ### Experiments:
