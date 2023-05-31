@@ -47,19 +47,19 @@ cp -r u32_nxxxx_txxx/src  /pqm4/crypto_kem/u32_nxxxx_txxx
 ```
 Set up a pk server(see /host-side):
 
--Build a serial port channel for simulating communication channel:
+- Build a serial port channel for simulating communication channel:
 ```
 socat -d -d pty,rawer pty,rawer
 ```
 ex:/dev/pts/2 and /dev/pts/3
 
--Open a new terminal and go to /host-side 
+- Open a new terminal and go to /host-side 
 
--Build a C library for computing inverse matrix:
+- Build a C library for computing inverse matrix:
 ```
 make
 ```
--Run the Classic McEliece PK storage server for communication with a simulated /dev/pts/2 serial port:
+- Run the Classic McEliece PK storage server for communication with a simulated /dev/pts/2 serial port:
 ```
 python3 ./host-mc348864keysrv.py /dev/pts/2
 ```
@@ -80,13 +80,13 @@ qemu-system-arm -M mps2-an386 -nographic -semihosting -serial /dev/pts/3 -kernel
 
 Set up a pk server(see /host-side):
 
--Go to /host-side 
+- Go to /host-side 
 
--Build a C library for computing inverse matrix:
+- Build a C library for computing inverse matrix:
 ```
 make
 ```
--Run the Classic McEliece PK storage server for communication between an M4 and /dev/ttyUSB0 port:
+- Run the Classic McEliece PK storage server for communication between an M4 and /dev/ttyUSB0 port:
 ```
 python3 ./host-mc348864keysrv.py /dev/ttyUSB0 38400
 ```
@@ -206,8 +206,19 @@ The API for KEM and execution evniroment and the same with the PQM4.
 
 
 ### Stack usage:
+[Note] Cover mupq/crypto_kem/stack.c by our stack.c .
 
-Benchamrked on mps2-an386 with the mupq/crypto_kem/stack.c in the PQM4.  
+Benchamrked on STM32F4-discovery.  
+
+| Parameter        | keypair | encaps | decaps  |
+| :---             |   ---:  |  ---:  |    ---: |
+| mceliece348864   | 52620   | 7204   | 18492   |
+| mceliece460896   | 96640   | 11416  | 34964   |
+| mceliece6688128  | 100928  | 15104  | 35708   |
+| mceliece6960119  | 96972   | 14888  | 35756   |
+| mceliece8192128  | 100928  | 15296  | 36092   |
+
+Benchamrked on mps2-an386.  
 
 | Parameter        | keypair | encaps | decaps  |
 | :---             |   ---:  |  ---:  |    ---: |
