@@ -206,7 +206,7 @@ The API for KEM and execution evniroment and the same with the PQM4.
 
 
 ### Stack usage:
-[Note] Cover mupq/crypto_kem/stack.c by our stack.c .
+[Note] Cover /pqm4/mupq/crypto_kem/stack.c by our stack.c .
 
 Benchamrked on STM32F4-discovery.  
 
