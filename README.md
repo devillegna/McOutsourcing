@@ -33,7 +33,7 @@ unsigned pksrv_get_pk(uint32_t token, uint8_t * pk_chunk , unsigned idx_pk );
 - **pqm4-projects**: Projects for PQM4(https://github.com/mupq/pqm4).  
  [Note] The implementation generates the same KATs as the R3 submisions in https://classic.mceliece.org/ .  
 
-## Running tests and benchmarks with the mps2-an386 simulator
+## Running PQM4 tests and benchmarks with the mps2-an386 simulator
 
 Follow the setup of PQM4 first.
 
@@ -76,7 +76,7 @@ Finally, run tests or benchmarks:
 qemu-system-arm -M mps2-an386 -nographic -semihosting -serial /dev/pts/3 -kernel elf/crypto_kem_u32_nxxxx_txxx__xxxxx.elf
 ```
 
-## Running tests and benchmarks with the stm32f4-discovery board
+## Running PQM4 tests and benchmarks with the stm32f4-discovery board
 
 Set up a pk server(see /host-side):
 
