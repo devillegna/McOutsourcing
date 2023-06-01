@@ -34,7 +34,7 @@ void send_bytes( const uint8_t * v , int l )
 
 
 
-#else    // defined(STM32F407VG)
+#elif defined(MPS2_AN386)    // mps2-an386
 
 #include <../../common/mps2/CMSDK_CM4.h>
 static inline void uart_putc(int c)

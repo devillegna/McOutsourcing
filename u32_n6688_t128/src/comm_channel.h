@@ -14,11 +14,11 @@ void send_bytes( const uint8_t * v , int l );
 //#endif
 
 
-// Use usart_XXXX_blocking for STM32F4
+/*// Use usart_XXXX_blocking for STM32F4
 #if defined(_MAC_OS_)
 #define COMM_TTY    "/dev/ttys007"
 #else
 #define COMM_TTY    "/dev/pts/3"
-#endif
+#endif*/
 
 #endif  //#ifndef _COMM_CHANNEL_H_
