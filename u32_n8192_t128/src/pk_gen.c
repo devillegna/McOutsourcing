@@ -131,7 +131,7 @@ uint32_t validate_pk_with_sk( uint32_t * prepk, const uint32_t * recv_pk ,  cons
     for(int l=0;l<32;l++) prepk[12] ^= ((temp0[12]>>l)&1)*(recv_pk[k+l]);  /// for GFBITS=13
     for(int i=1; i<SYS_T;i++) {
       vec32_mul( temp1 , temp0 , a_bs );
-      uint32_t *temp2=temp0; temp0=temp1; temp1=temp2;  // swap
+      uint32_t * temp2 = temp0; temp0 = temp1; temp1 = temp2;
       matmadd_32x4( prepk +i*GFBITS   , temp0   , recv_pk+k );
       matmadd_32x4( prepk +i*GFBITS+4 , temp0+4 , recv_pk+k );
       matmadd_32x4( prepk +i*GFBITS+8 , temp0+8 , recv_pk+k );
@@ -154,7 +154,7 @@ uint32_t validate_pk_with_sk( uint32_t * prepk, const uint32_t * recv_pk ,  cons
 
 
 
-#include "pksrv_n8192_t128.h"
+#include "pksrv.h"
 
 
 
@@ -175,7 +175,7 @@ int pk_gen(unsigned char * pk, const unsigned char * irr, const unsigned char *e
 	//uint32_t mat0[ GFBITS * SYS_T + 32 ] = {0}; // linear combination of rows of pk for outsourcing, 6656 + 128 bytes
 	uint32_t * mat0 = __mat + (GFBITS*SYS_T);     // linear combination of rows of pk for outsourcing, 6656 + 128 bytes
 
-	uint32_t pksrv_token = pksrv_init(5);
+	uint32_t pksrv_token = pksrv_init(PKSRV_PARAM);
 	if( -1 == pksrv_token ) return -1;
 
 	for(int i=0;i<nblocks_I;i++) {
@@ -208,7 +208,7 @@ int pk_gen(unsigned char * pk, const unsigned char * irr, const unsigned char *e
 		//}
 	}
 	//store4(  pk , pksrv_token );
-	crypto_hash_32b( pk , pk+32 , (nblocks_H-nblocks_I)*32 );
+	crypto_hash_32b(  pk , pk+32 , (nblocks_H-nblocks_I)*32 );
 
 	return 0;
 }

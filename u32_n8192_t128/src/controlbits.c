@@ -8,12 +8,6 @@
 typedef int16_t int16;
 typedef int32_t int32;
 
-
-
-
-
-
-
 /* parameters: 1 <= w <= 10; n = 2^w */
 /* input: permutation pi of {0,1,...,n-1} */
 /* output: (2m-1)n/2 control bits at positions pos,pos+step,... */

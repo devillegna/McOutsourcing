@@ -1,5 +1,5 @@
 
-#include "pksrv_n6688_t128.h"
+#include "pksrv.h"
 #include "string.h"
 
 #if !defined(_PKSRV_OUTSOURCING_)

@@ -1,5 +1,5 @@
 
-#include "pksrv_n3488_t64.h"
+#include "pksrv.h"
 #include "string.h"
 
 #if !defined(_PKSRV_OUTSOURCING_)
@@ -40,7 +40,6 @@ uint32_t pksrv_init( uint32_t parameter )
 
   return _client_token;
 }
-
 
 // return a token
 uint32_t pksrv_retrive_pk( const uint8_t * pkhash )
@@ -109,12 +108,6 @@ int _compute_invmat(uint32_t *invmat, uint32_t *mat, const int h, const int w, c
 }
 
 
-static
-void _compute_pk_768( uint8_t * pk_chunk , const uint8_t *invmat , const uint8_t * prepk_chunk )
-{
-  //matrix_mul2( pk_chunk , invmat , NUM_ROW_PK , NUM_ROW_PREPK/32 , prepk_chunk , 1 );
-  matrix_mul2_32( pk_chunk , invmat , NUM_ROW_PK , NUM_ROW_PREPK/32 , prepk_chunk , 1 );
-}
 
 
 
@@ -147,6 +140,14 @@ unsigned pksrv_compute_pk( uint32_t token )  // compute invmat for generating pk
 
 
 
+static
+void _compute_pk( uint8_t * pk_chunk , const uint8_t *invmat , const uint8_t * prepk_chunk )
+{
+  //matrix_mul2( pk_chunk , invmat , NUM_ROW_PK , NUM_ROW_PREPK/32 , prepk_chunk , 1 );
+  matrix_mul2_32( pk_chunk , invmat , NUM_ROW_PK , NUM_ROW_PREPK/32 , prepk_chunk , 1 );
+}
+
+
 unsigned pksrv_get_pk(uint32_t token, uint8_t * pk_chunk , unsigned idx_pk )
 {
   if( token != _client_token ) return -1;
@@ -156,7 +157,7 @@ unsigned pksrv_get_pk(uint32_t token, uint8_t * pk_chunk , unsigned idx_pk )
   if( 1 != _pksrv_received[NUM_CHUNK_I+idx_pk] ) return -1;
 
   if( 0 == _pksrv_computed[idx_pk] ) {
-    _compute_pk_768( pk_chunk , _pksrv_invmat , &_pksrv_buffer[NUM_CHUNK_I+idx_pk][0] );
+    _compute_pk( pk_chunk , _pksrv_invmat , &_pksrv_buffer[NUM_CHUNK_I+idx_pk][0] );
     memcpy( &_pksrv_buffer[NUM_CHUNK_I+idx_pk][0] , pk_chunk , SIZE_CHUNK_PK );
     _pksrv_computed[idx_pk] = 1; // XXX
 //printf("pk chunk %d computed.\n", idx_pk );

@@ -147,7 +147,7 @@ uint32_t _reduce_x4(uint32_t b0, uint32_t b1, uint32_t b2, uint32_t b3 ) {
 }
 
 #include "pk_gen.h"
-#include "pksrv_n6960_t119.h"
+#include "pksrv.h"
 #include "hash_shake256.h"
 
 /* input: public key pk , error vector e */

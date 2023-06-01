@@ -25,12 +25,7 @@ unsigned pksrv_compute_pk( uint32_t token );
 unsigned pksrv_get_pk(uint32_t token, uint8_t * pk_chunk , unsigned idx_pk );
 ```
 
-
-
-
-
 ## Contents
-
 
 - host-side/: A (python) pk server executed in the PC side.  
 - u32_nXXXX_tXXXX: Classic McEliece cdoe with various parameters for performing the out-sourcing experiments in a M4 device.  
@@ -38,6 +33,80 @@ unsigned pksrv_get_pk(uint32_t token, uint8_t * pk_chunk , unsigned idx_pk );
 - **pqm4-projects**: Projects for PQM4(https://github.com/mupq/pqm4).  
  [Note] The implementation generates the same KATs as the R3 submisions in https://classic.mceliece.org/ .  
 
+## Running tests and benchmarks with the mps2-an386 simulator
+
+Follow the setup of PQM4 first.
+
+Then obtain the pqm4 library and the submodules:
+```
+git clone --recursive https://github.com/mupq/pqm4.git
+```
+Copy files to the PQM4 directory:
+```
+cp -r u32_nxxxx_txxx/src  /pqm4/crypto_kem/u32_nxxxx_txxx
+```
+Set up a pk server(see /host-side):
+
+- Build a serial port channel for simulating communication channel:
+```
+socat -d -d pty,rawer pty,rawer
+```
+ex:/dev/pts/2 and /dev/pts/3
+
+- Open a new terminal and go to /host-side 
+
+- Build a C library for computing inverse matrix:
+```
+make
+```
+- Run the Classic McEliece PK storage server for communication with a simulated /dev/pts/2 serial port:
+```
+python3 ./host-mc348864keysrv.py /dev/pts/2
+```
+
+Go to /pqm4.
+
+Build projects for mps2-an386 platform:
+```
+make -j4 PLATFORM=mps2-an386 IMPLEMENTATION_PATH=crypto_kem/u32_nxxxx_txxx/
+```
+
+Finally, run tests or benchmarks:
+```
+qemu-system-arm -M mps2-an386 -nographic -semihosting -serial /dev/pts/3 -kernel elf/crypto_kem_u32_nxxxx_txxx__xxxxx.elf
+```
+
+## Running tests and benchmarks with the stm32f4-discovery board
+
+Set up a pk server(see /host-side):
+
+- Go to /host-side 
+
+- Build a C library for computing inverse matrix:
+```
+make
+```
+- Run the Classic McEliece PK storage server for communication between an M4 and /dev/ttyUSB0 port:
+```
+python3 ./host-mc348864keysrv.py /dev/ttyUSB0 38400
+```
+[Note] The file /dev/ttyUSB0 must have rwx permissions.
+
+Go to the /pqm4.
+
+Build projects for mps2-an386 platform:
+```
+make -j4 PLATFORM=stm32f4discovery IMPLEMENTATION_PATH=crypto_kem/u32_nxxxx_txxx/
+```
+
+Write the binary to the board and run the test:
+```
+st-flash write bin/crypto_kem_u32_nxxxx_txxx__stack.bin 0x8000000
+```
+[Note] There is a instruction for connecting the board in https://github.com/mupq/pqm4#connecting-the-stm32f4-discovery-board-to-the-host.
+
+
+Finally, press the reset button on the board for running tests or benchmarks.
 
 ## Experiments and Results:
 
@@ -137,16 +206,27 @@ The API for KEM and execution evniroment and the same with the PQM4.
 
 
 ### Stack usage:
+[Note] Cover /pqm4/mupq/crypto_kem/stack.c by our stack.c .
 
-Benchamrked on STM32F4-discovery with the mupq/crypto_kem/stack.c in the PQM4.  
+Benchamrked on STM32F4-discovery.  
 
 | Parameter        | keypair | encaps | decaps  |
 | :---             |   ---:  |  ---:  |    ---: |
-| mceliece348864   | 60232   | 7236   | 18500   |
-| mceliece460896   | ???     |  ???   | 34956   |
-| mceliece6688128  | ???     |  ???   | 35716   |
-| mceliece6960119  | ???     |  ???   | 35764   |
-| mceliece8192128  | 100948  | 15332  | 36100   |
+| mceliece348864   | 52620   | 7204   | 18492   |
+| mceliece460896   | 96640   | 11416  | 34964   |
+| mceliece6688128  | 100928  | 15104  | 35708   |
+| mceliece6960119  | 96972   | 14888  | 35756   |
+| mceliece8192128  | 100928  | 15296  | 36092   |
+
+Benchamrked on mps2-an386.  
+
+| Parameter        | keypair | encaps | decaps  |
+| :---             |   ---:  |  ---:  |    ---: |
+| mceliece348864   | 52620   | 7204   | 18492   |
+| mceliece460896   | 96572   | 11308  | 34964   |
+| mceliece6688128  | 100920  | 14996  | 35708   |
+| mceliece6960119  | 96972   | 14780  | 35756   |
+| mceliece8192128  | 100816  | 15188  | 36092   |
 
 These numbers are the measurements of stack usage of related functions. It does not contain the key pair storage provided by the caller functions.  
 

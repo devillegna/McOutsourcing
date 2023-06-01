@@ -185,7 +185,7 @@ uint32_t validate_pk_with_sk( uint32_t * prepk, const uint32_t * recv_pk ,  cons
 
 
 
-#include "pksrv_n6960_t119.h"
+#include "pksrv.h"
 
 
 
@@ -264,12 +264,4 @@ int pk_gen(unsigned char * pk, const unsigned char * irr, const unsigned char *e
 
 	return 0;
 }
-
-
-
-
-
-
-
-
 

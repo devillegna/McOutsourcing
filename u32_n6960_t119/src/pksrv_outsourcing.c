@@ -1,5 +1,5 @@
 
-#include "pksrv_n6960_t119.h"
+#include "pksrv.h"
 #include "string.h"
 
 
@@ -28,8 +28,8 @@ void _pksrv_reset_used_time() { _pksrv_time_used = 0; }
 uint64_t _pksrv_get_used_time() { return _pksrv_time_used; }
 
 #else
-static inline void hal_send_str(const char * str ) {}
-static inline uint64_t hal_get_time() { return 0; }
+//static inline void hal_send_str(const char * str ) {}
+//static inline uint64_t hal_get_time() { return 0; }
 #endif
 
 

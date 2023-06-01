@@ -1,5 +1,5 @@
 
-#include "pksrv_n4608_t96.h"
+#include "pksrv.h"
 #include "string.h"
 
 #if !defined(_PKSRV_OUTSOURCING_)
@@ -46,6 +46,7 @@ uint32_t pksrv_retrive_pk( const uint8_t * pkhash )
 {
   return _client_token;  // XXX: fix the fake server
 }
+
 
 unsigned pksrv_store_prepk( uint32_t token , const uint8_t* prepk_chunk , unsigned idx_prepk )
 {

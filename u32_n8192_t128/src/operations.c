@@ -32,10 +32,10 @@ int crypto_kem_enc(
 
 	two_e[0] = 2;
 	crypto_hash_32b(c + SYND_BYTES, two_e, 1 + SYS_N/8 );
-
-	//encrypt((uint8_t*)_buf_c, pk, e);
+	
 	if( encrypt((uint8_t*)_buf_c, pk, e) ) return -1; // may fail from received pk
-	memcpy(c, _buf_c, SYND_BYTES );
+	
+  	memcpy(c, _buf_c, SYND_BYTES );
 	memcpy(one_ec + 1 + SYS_N/8, c, SYND_BYTES + 32);
 
 	one_ec[0] = 1;
@@ -86,16 +86,14 @@ int crypto_kem_dec(
 }
 
 
-int crypto_kem_keypair(
+int crypto_kem_keypair
+(
 	unsigned char *pk,
 	unsigned char *sk
 )
 {
-	//uint32_t buffer_64KB[(1<<GFBITS)*2];  // 64KB
 	uint32_t buffer_64KB[((1<<GFBITS)/32)*GFBITS*4];  // 53,248 Bytes (52KB)
-	//uint16_t alpha[(1<<GFBITS)];          // 16KB
 	uint32_t alpha_bs[((1<<GFBITS)/32)*GFBITS];     // 13,312 Bytes
-	//unsigned char r[ SYS_N/8 + (1 << GFBITS)*sizeof(uint32_t) + SYS_T*2 + 32 ];
 	// SYS_N/8=8192/8=1024; (1<<GFBITS)*4=32768; SYS_T=96
 	uint8_t * r           = buffer_64KB;
 	uint32_t* r_perm_u32  = (uint32_t*) (r + SYS_N/8);

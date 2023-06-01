@@ -154,7 +154,7 @@ uint32_t validate_pk_with_sk( uint32_t * prepk, const uint32_t * recv_pk ,  cons
 
 
 
-#include "pksrv_n4608_t96.h"
+#include "pksrv.h"
 
 
 

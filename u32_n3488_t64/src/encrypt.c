@@ -124,7 +124,7 @@ void gen_e(unsigned char *e)
 
 //#include "matrix_matxvec.h"
 
-#include "pksrv_n3488_t64.h"
+#include "pksrv.h"
 
 //#define SIZE_CHUNK_PK     (NUM_ROW_PK*4)
 //#define NUM_CHUNK_PK      (NUM_CHUNK_EXTPK-NUM_CHUNK_I)  // 85

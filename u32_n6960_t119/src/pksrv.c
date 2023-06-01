@@ -1,20 +1,23 @@
 
-#include "pksrv_n8192_t128.h"
+#include "pksrv.h"
 #include "string.h"
 
 #if !defined(_PKSRV_OUTSOURCING_)
 
 static uint32_t _client_token = 0;
 
-#define NUM_CHUNK_PREPK   (NUM_CHUNK_PK+NUM_CHUNK_I)
+#define NUM_CHUNK_PREPK   (NUM_CHUNK_EXTPK)
 
-static uint8_t _pksrv_buffer[NUM_CHUNK_PREPK][SIZE_CHUNK_PREPK];
+static uint8_t _pksrv_buffer[NUM_CHUNK_PREPK+1][SIZE_CHUNK_PREPK];
 static uint8_t _pksrv_received[NUM_CHUNK_PREPK];
-static uint8_t _pksrv_computed[NUM_CHUNK_PREPK];
-
 
 static uint8_t _pksrv_invmat_computed;
-static uint8_t _pksrv_invmat[NUM_ROW_PREPK*NUM_ROW_PREPK/8];
+static uint8_t _pksrv_invmat[(NUM_ROW_PREPK)*(NUM_CHUNK_I+1)*4];
+
+static uint8_t _pksrv_pkbuffer[NUM_CHUNK_PK][SIZE_CHUNK_PK];
+static uint8_t _pksrv_pkcomputed[NUM_CHUNK_PK];
+
+
 
 
 
@@ -25,8 +28,10 @@ static void _pksrv_initialize()
 {
   // initialize
   memset( _pksrv_received , 0 , sizeof(_pksrv_received) );
-  memset( _pksrv_computed , 0 , sizeof(_pksrv_computed) );
+  memset( _pksrv_pkcomputed , 0 , sizeof(_pksrv_pkcomputed) );
   _pksrv_invmat_computed = 0;
+
+  memset( &_pksrv_buffer[NUM_CHUNK_PREPK][0] , 0 , SIZE_CHUNK_PREPK );
 }
 
 
@@ -48,7 +53,6 @@ uint32_t pksrv_retrive_pk( const uint8_t * pkhash )
 }
 
 
-
 unsigned pksrv_store_prepk( uint32_t token , const uint8_t* prepk_chunk , unsigned idx_prepk )
 {
   if( token != _client_token ) return -1;
@@ -63,7 +67,6 @@ unsigned pksrv_store_prepk( uint32_t token , const uint8_t* prepk_chunk , unsign
 
 //////////////////////////////////////////////////////
 
-
 #include "matrix_mul.h"
 
 
@@ -72,11 +75,13 @@ unsigned pksrv_store_prepk( uint32_t token , const uint8_t* prepk_chunk , unsign
 
 // state-less
 static
-int _compute_invmat(uint32_t *invmat, uint32_t *mat, const int h, const int w, const int h_ext)
+int _compute_invmat(uint32_t *invmat, uint32_t *mat, const int h, const int w_u32, const int h_ext)
 {
-  const int w_ext = h_ext/32;
+  const int w = w_u32;
+  const int w_ext = w_u32+1;
+
   // identity matrix
-  memset(invmat, 0, h_ext*h_ext/8 );
+  memset(invmat, 0, h_ext*w_ext*4 );
   for(int i=0;i<h_ext;i++) {  invmat[i*w_ext+ (i>>5)] = 1<<(i&31); }
 
   for(int i=0;i<h;i++) {
@@ -92,7 +97,6 @@ int _compute_invmat(uint32_t *invmat, uint32_t *mat, const int h, const int w, c
 
         break;
       }
-
     }
     if( 0 == (mat[i*w + p_idx]&tar_bit) ) return -1;
 
@@ -126,12 +130,12 @@ unsigned pksrv_compute_pk( uint32_t token )  // compute invmat for generating pk
   if( 0 == data_received ) return -1;
 
   // start gaussian elim
-  uint8_t mat[NUM_ROW_PREPK*NUM_ROW_PK/8];
+  uint8_t mat[NUM_ROW_PREPK*NUM_CHUNK_I*4];
   for(int j=0;j<NUM_ROW_PREPK;j++) {
     for(int i=0;i<NUM_CHUNK_I;i++) memcpy( &mat[j*(NUM_CHUNK_I*4)+i*4] , &_pksrv_buffer[i][j*4] , 4 );
   }
 
-  int r = _compute_invmat( _pksrv_invmat , mat , NUM_ROW_PK , NUM_ROW_PK/32 , NUM_ROW_PREPK );
+  int r = _compute_invmat( _pksrv_invmat , mat , NUM_ROW_PK , NUM_CHUNK_I , NUM_ROW_PREPK );
   if( 0 == r ) { _pksrv_invmat_computed = 1; return 0; }
   else { _pksrv_invmat_computed = 0; return -1; }
 }
@@ -144,8 +148,8 @@ unsigned pksrv_compute_pk( uint32_t token )  // compute invmat for generating pk
 static
 void _compute_pk( uint8_t * pk_chunk , const uint8_t *invmat , const uint8_t * prepk_chunk )
 {
-  //matrix_mul2( pk_chunk , invmat , NUM_ROW_PK , NUM_ROW_PREPK/32 , prepk_chunk , 1 );
-  matrix_mul2_32( pk_chunk , invmat , NUM_ROW_PK , NUM_ROW_PREPK/32 , prepk_chunk , 1 );
+  matrix_mul2( pk_chunk , invmat , NUM_ROW_PK , NUM_CHUNK_I+1 , prepk_chunk , 1 );
+  //matrix_mul2_32( pk_chunk , invmat , NUM_ROW_PK , NUM_CHUNK_I+1 , prepk_chunk , 1 );
 }
 
 
@@ -155,17 +159,33 @@ unsigned pksrv_get_pk(uint32_t token, uint8_t * pk_chunk , unsigned idx_pk )
   if( NUM_CHUNK_PK <= idx_pk ) return -1;
 
   if( 1 != _pksrv_invmat_computed ) return -1;
-  if( 1 != _pksrv_received[NUM_CHUNK_I+idx_pk] ) return -1;
+  if( 1 != _pksrv_received[NUM_CHUNK_I-1+idx_pk] ) return -1;
+  if( (idx_pk+1!=NUM_CHUNK_PK) && (1 != _pksrv_received[NUM_CHUNK_I+idx_pk]) ) return -1;
 
-  if( 0 == _pksrv_computed[idx_pk] ) {
-    _compute_pk( pk_chunk , _pksrv_invmat , &_pksrv_buffer[NUM_CHUNK_I+idx_pk][0] );
-    memcpy( &_pksrv_buffer[NUM_CHUNK_I+idx_pk][0] , pk_chunk , SIZE_CHUNK_PK );
-    _pksrv_computed[idx_pk] = 1; // XXX
+  if( 0 == _pksrv_pkcomputed[idx_pk] ) {
+    _pksrv_pkcomputed[idx_pk] = 1;
+
+    uint32_t _prepk[(NUM_CHUNK_I+1)*32] = {0};
+    for(int i=0;i<NUM_ROW_PREPK;i++) {
+      uint64_t row_i;
+      uint8_t * row_i8 = (uint8_t*)&row_i;
+      row_i8[0] = _pksrv_buffer[NUM_CHUNK_I-1+idx_pk][i*4];
+      row_i8[1] = _pksrv_buffer[NUM_CHUNK_I-1+idx_pk][i*4+1];
+      row_i8[2] = _pksrv_buffer[NUM_CHUNK_I-1+idx_pk][i*4+2];
+      row_i8[3] = _pksrv_buffer[NUM_CHUNK_I-1+idx_pk][i*4+3];
+      row_i8[4] = _pksrv_buffer[NUM_CHUNK_I+idx_pk][i*4];
+      row_i8[5] = _pksrv_buffer[NUM_CHUNK_I+idx_pk][i*4+1];
+      row_i8[6] = _pksrv_buffer[NUM_CHUNK_I+idx_pk][i*4+2];
+      row_i8[7] = _pksrv_buffer[NUM_CHUNK_I+idx_pk][i*4+3];
+
+      row_i >>= 11;
+      _prepk[i] = row_i&0xffffffff;
+    }
+
+    _compute_pk( &_pksrv_pkbuffer[idx_pk][0] , _pksrv_invmat , &_prepk );
 //printf("pk chunk %d computed.\n", idx_pk );
-  } else {
-    memcpy( pk_chunk , &_pksrv_buffer[NUM_CHUNK_I+idx_pk][0] , SIZE_CHUNK_PK );
-    //for(unsigned i=0; i<SIZE_CHUNK_PK; i++) { pk_chunk[i] = _pksrv_buffer[NUM_CHUNK_I+idx_pk][i]; }
   }
+  memcpy( pk_chunk , &_pksrv_pkbuffer[idx_pk][0] , SIZE_CHUNK_PK );
 
   return 0;
 
